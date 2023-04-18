@@ -1,10 +1,12 @@
 package com.example.ShoppingWebsiteServer.repository;
 
+import com.example.ShoppingWebsiteServer.model.Order;
 import com.example.ShoppingWebsiteServer.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -12,6 +14,10 @@ public class UserRepository implements UserRepositoryInterface{
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private static final String USERS_TABLE = "users";
+    private static final String ORDERS_TABLE = "orders";
+    private static final String ITEM_TO_USER_TABLE = "item_to_user";
+
+    private static final String ITEM_TO_ORDER_TABLE = "item_to_order";
 
     @Override
     public String register(User user) {
@@ -53,6 +59,16 @@ public class UserRepository implements UserRepositoryInterface{
     @Override
     public String deleteUserById(Integer id) {
         try {
+            String favoriteSql = String.format("DELETE FROM %s WHERE user_id = ?", ITEM_TO_USER_TABLE);
+            jdbcTemplate.update(favoriteSql, id);
+            String getOrderSql = String.format("SELECT * FROM %s WHERE user_id = ?", ORDERS_TABLE);
+            List<Order> orders = jdbcTemplate.query(getOrderSql, new OrderMapper(), id);
+            orders.forEach(order -> {
+                String itemToOrderSql = String.format("DELETE FROM %s WHERE order_id = ?", ITEM_TO_ORDER_TABLE);
+                jdbcTemplate.update(itemToOrderSql, order.getId());
+            });
+            String delOrderSql = String.format("DELETE FROM %s WHERE user_id = ?", ORDERS_TABLE);
+            jdbcTemplate.update(delOrderSql, id);
             String sql = String.format("DELETE FROM %s WHERE id = ?", USERS_TABLE);
             jdbcTemplate.update(sql, id);
             return "User deleted successfully";

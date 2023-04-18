@@ -41,7 +41,8 @@ VALUES('helmet', 'https://m.media-amazon.com/images/W/IMAGERENDERING_521856-T1/i
 ('air-conditioner', 'https://zabilo.com/24070-large_default/electra-top-air-conditioner-2hp-19551-btu-cooling-output-wifi-exclusive-23.jpg', 550, 80),
 ('briefcase', 'https://www.caseluggage.com/media/catalog/product/cache/c7f0fef5d6f0c21800fabe206ec678b5/c/a/carl_cfc8802_cognac_m_1.jpg', 150, 20),
 ('chair', 'https://m.media-amazon.com/images/W/IMAGERENDERING_521856-T1/images/I/71mKwaKglhL._SL1500_.jpg', 230, 10),
-('picture', 'https://target.scene7.com/is/image/Target/WallArt_QUIVER-210303-1614805155207', 45, 40);
+('picture', 'https://target.scene7.com/is/image/Target/WallArt_QUIVER-210303-1614805155207', 45, 40),
+('printer', 'https://img.wisebuy.co.il/data/images/Guide/c-printer/shutterstock_321061199132412528611172957.jpg', 652, 70);
 
 CREATE TABLE orders(
 id int NOT NULL AUTO_INCREMENT,
@@ -49,7 +50,7 @@ user_id int NOT NULL,
 order_date date DEFAULT current_date,
 shipping_address varchar NOT NULL,
 total_price double NOT NULL default 0,
-status varchar NOT NULL,
+status varchar NOT NULL DEFAULT 'TEMP',
 PRIMARY KEY (id),
 FOREIGN KEY (user_id) REFERENCES users(id)
 );
