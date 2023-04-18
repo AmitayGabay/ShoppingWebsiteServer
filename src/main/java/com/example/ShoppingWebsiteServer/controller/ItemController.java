@@ -16,27 +16,27 @@ public class ItemController {
     private ItemService itemService;
 
     @PostMapping(value = "/add-to-favorites")
-    public Item addToFavorites(@RequestBody FavoriteRequest favoriteRequest){
+    public Item addToFavorites(@RequestBody FavoriteRequest favoriteRequest) {
         return itemService.addToFavorites(favoriteRequest);
     }
 
     @DeleteMapping(value = "/remove-from-favorites")
-    public String removeFromFavorites(@RequestBody FavoriteRequest favoriteRequest){
+    public String removeFromFavorites(@RequestBody FavoriteRequest favoriteRequest) {
         return itemService.removeFromFavorites(favoriteRequest);
     }
 
     @GetMapping(value = "/get-favorites", params = "id")
-    public List<Item> getFavoritesByUserId(@RequestParam Integer id){
+    public List<Item> getFavoritesByUserId(@RequestParam Integer id) {
         return itemService.getFavoritesByUserId(id);
     }
 
-    @GetMapping(value ="/favorites", params = {"userid", "name"})
+    @GetMapping(value = "/favorites", params = {"userid", "name"})
     public List<Item> getFavoritesByName(@RequestParam Integer userid, @RequestParam String name) {
         return itemService.getFavoritesByName(userid, name);
     }
 
     @PostMapping(value = "/is-favorite")
-    public Boolean isFavoriteItem(@RequestBody FavoriteRequest favoriteRequest){
+    public Boolean isFavoriteItem(@RequestBody FavoriteRequest favoriteRequest) {
         return itemService.isFavoriteItem(favoriteRequest);
     }
 
@@ -46,7 +46,7 @@ public class ItemController {
     }
 
     @GetMapping(params = "name")
-    public List<Item> getItemsByName(@RequestParam String name){
+    public List<Item> getItemsByName(@RequestParam String name) {
         return itemService.getItemsByName(name);
     }
 

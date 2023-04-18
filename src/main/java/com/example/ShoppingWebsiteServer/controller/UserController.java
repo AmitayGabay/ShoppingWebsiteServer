@@ -14,13 +14,13 @@ public class UserController {
     private UserService userService;
 
     @PostMapping(value = "/register")
-    public String createUser(@RequestBody User user) {
+    public User createUser(@RequestBody User user) {
         return userService.register(user);
     }
 
-    @PutMapping(value = "/sign-in", params = "id")
-    public User signIn(@RequestParam Integer id) {
-        return userService.signIn(id);
+    @PutMapping(value = "/sign-in", params = "email")
+    public User signIn(@RequestParam String email) {
+        return userService.signIn(email);
     }
 
     @PutMapping(value = "/sign-out", params = "id")
@@ -36,6 +36,11 @@ public class UserController {
     @GetMapping(params = "id")
     public User getUserById(@RequestParam Integer id) {
         return userService.getUserById(id);
+    }
+
+    @GetMapping(params = "email")
+    public User getUserByEmail(@RequestParam String email) {
+        return userService.getUserByEmail(email);
     }
 
     @GetMapping(value = "/all-users")

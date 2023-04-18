@@ -16,17 +16,16 @@ public class Order {
     private Double totalPrice;
     private OrderStatus status;
 
-    public Order(Integer userId){
+    public Order(Integer userId, String shippingAddress) {
         this.userId = userId;
         this.orderDate = LocalDate.now();
+        this.shippingAddress = shippingAddress;
     }
+
     public Order(Integer id, Integer userId, LocalDate orderDate, String shippingAddress, Double totalPrice, OrderStatus status) {
         this.id = id;
         this.userId = userId;
         this.orderDate = orderDate;
-        if(orderDate == null) {
-            this.orderDate = LocalDate.now();
-        }
         this.shippingAddress = shippingAddress;
         this.totalPrice = totalPrice;
         this.status = status;

@@ -8,35 +8,36 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class UserService implements UserServiceInterface{
+public class UserService implements UserServiceInterface {
 
     @Autowired
     private UserRepository userRepository;
 
     @Override
-    public String register(User user) {
-        if (user.getFirstName() == null || user.getLastName() == null || user.getEmail() == null) {
-            return "User not created, first name, last name and email are required";
+    public User register(User user) {
+        if (user.getFirstName() == null || user.getLastName() == null || user.getEmail() == null || user.getAddress() == null) {
+            System.out.println("User not created, first name, last name, email and address are required");
+            return null;
         }
         return userRepository.register(user);
     }
 
     @Override
-    public User signIn(Integer id) {
-        if (id == null) {
-            System.out.println("id is required");
+    public User signIn(String email) {
+        if (email == null) {
+            System.out.println("email is required");
             return null;
         }
-        User registeredUser = userRepository.getUserById(id);
+        User registeredUser = userRepository.getUserByEmail(email);
         if (registeredUser == null) {
-            System.out.println("The user with this id does not exist");
+            System.out.println("The user with this email does not exist");
             return null;
         }
-        if(registeredUser.getIsConnected()){
-            System.out.println("The user with this id is already connected");
+        if (registeredUser.getIsConnected()) {
+            System.out.println("The user with this email is already connected");
             return null;
         }
-        return userRepository.signIn(id);
+        return userRepository.signIn(email);
     }
 
     @Override
@@ -50,7 +51,7 @@ public class UserService implements UserServiceInterface{
             System.out.println("The user with this id does not exist");
             return null;
         }
-        if(!registeredUser.getIsConnected()){
+        if (!registeredUser.getIsConnected()) {
             System.out.println("The user with this id does not connected");
             return null;
         }
@@ -76,6 +77,15 @@ public class UserService implements UserServiceInterface{
             return null;
         }
         return userRepository.getUserById(id);
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            System.out.println("It is not possible to accept the user without email");
+            return null;
+        }
+        return userRepository.getUserByEmail(email);
     }
 
     @Override

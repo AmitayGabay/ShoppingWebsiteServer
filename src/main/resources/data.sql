@@ -2,9 +2,9 @@ CREATE TABLE users(
 id int NOT NULL AUTO_INCREMENT,
 first_name varchar NOT NULL,
 last_name varchar NOT NULL,
-email varchar NOT NULL,
+email varchar UNIQUE NOT NULL,
 phone varchar,
-address varchar,
+address varchar NOT NULL,
 is_connected boolean NOT NULL default false,
 PRIMARY KEY (id)
 );

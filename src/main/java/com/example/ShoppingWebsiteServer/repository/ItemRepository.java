@@ -2,7 +2,6 @@ package com.example.ShoppingWebsiteServer.repository;
 
 import com.example.ShoppingWebsiteServer.model.FavoriteRequest;
 import com.example.ShoppingWebsiteServer.model.Item;
-import com.example.ShoppingWebsiteServer.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -60,24 +59,24 @@ public class ItemRepository implements ItemRepositoryInterface {
     public List<Item> getFavoritesByName(List<Item> favorites, String name) {
         List<Item> results = new ArrayList<Item>();
         favorites.forEach(favorite -> {
-            if(favorite.getTitle().contains(name))
+            if (favorite.getTitle().contains(name))
                 results.add(favorite);
         });
         return results;
     }
 
     @Override
-    public Boolean isFavoriteItem(FavoriteRequest favoriteRequest){
-        try{
+    public Boolean isFavoriteItem(FavoriteRequest favoriteRequest) {
+        try {
             String sql = String.format("SELECT items.id, items.title, items.picture, items.usd_price, items.amount FROM %s \n" +
-                            "INNER JOIN %s \n" +
-                            "ON items.id = item_to_user.item_id \n" +
-                            "WHERE item_to_user.item_id = ? AND item_to_user.user_id = ?", ITEMS_TABLE, ITEM_TO_USER_TABLE);
+                    "INNER JOIN %s \n" +
+                    "ON items.id = item_to_user.item_id \n" +
+                    "WHERE item_to_user.item_id = ? AND item_to_user.user_id = ?", ITEMS_TABLE, ITEM_TO_USER_TABLE);
             Item item = jdbcTemplate.queryForObject(sql, new ItemMapper(), favoriteRequest.getItemId(), favoriteRequest.getUserId());
-            if(item == null){
+            if (item == null) {
                 return false;
             }
-                return true;
+            return true;
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
@@ -123,7 +122,7 @@ public class ItemRepository implements ItemRepositoryInterface {
 
     @Override
     public List<Item> getAllFavorites() {
-        try{
+        try {
             String sql = String.format("SELECT items.id, items.title, items.picture, items.usd_price, items.amount FROM %s \n" +
                     "INNER JOIN %s \n" +
                     "ON items.id = item_to_user.item_id", ITEMS_TABLE, ITEM_TO_USER_TABLE);
@@ -131,7 +130,7 @@ public class ItemRepository implements ItemRepositoryInterface {
             List<Integer> favoritesIds = new ArrayList<Integer>();
             List<Item> unrepeatedFavorites = new ArrayList<Item>();
             for (int i = 0; i < favorites.size(); i++) {
-                if(!favoritesIds.contains(favorites.get(i).getId())){
+                if (!favoritesIds.contains(favorites.get(i).getId())) {
                     favoritesIds.add(favorites.get(i).getId());
                     unrepeatedFavorites.add(favorites.get(i));
                 }

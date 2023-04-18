@@ -1,9 +1,6 @@
 package com.example.ShoppingWebsiteServer.service;
 
-import com.example.ShoppingWebsiteServer.model.FavoriteRequest;
-import com.example.ShoppingWebsiteServer.model.Item;
-import com.example.ShoppingWebsiteServer.model.Order;
-import com.example.ShoppingWebsiteServer.model.OrderRequest;
+import com.example.ShoppingWebsiteServer.model.*;
 
 import java.util.List;
 
@@ -13,6 +10,8 @@ public interface OrderServiceInterface {
     Item addItemToOrder(FavoriteRequest favoriteRequest);
 
     String removeItemFromOrder(OrderRequest orderRequest);
+
+    Order updateAddressInOrder(UpdateAddressRequest updateAddressRequest);
 
     Order hasOpenOrder(Integer userId);
 

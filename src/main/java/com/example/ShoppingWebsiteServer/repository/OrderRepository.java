@@ -1,9 +1,6 @@
 package com.example.ShoppingWebsiteServer.repository;
 
-import com.example.ShoppingWebsiteServer.model.Item;
-import com.example.ShoppingWebsiteServer.model.Order;
-import com.example.ShoppingWebsiteServer.model.OrderRequest;
-import com.example.ShoppingWebsiteServer.model.User;
+import com.example.ShoppingWebsiteServer.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -13,13 +10,14 @@ import java.util.HashMap;
 import java.util.List;
 
 @Repository
-public class OrderRepository implements OrderRepositoryInterface{
+public class OrderRepository implements OrderRepositoryInterface {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private static final String ORDERS_TABLE = "orders";
     private static final String ITEMS_TABLE = "items";
     private static final String ITEM_TO_ORDER_TABLE = "item_to_order";
+
     @Override
     public Integer createNewOrder(Order order) {
         try {
@@ -55,6 +53,12 @@ public class OrderRepository implements OrderRepositoryInterface{
             jdbcTemplate.update(sql, item.getId(), order.getId());
             String additionalSql = String.format("UPDATE %s SET total_price = ? WHERE id = ?", ORDERS_TABLE);
             jdbcTemplate.update(additionalSql, order.getTotalPrice() - item.getUsdPrice(), order.getId());
+            String itemToOrderSql = String.format("SELECT * FROM %s WHERE order_id = ?", ITEM_TO_ORDER_TABLE);
+            List<OrderRequest> itemToOrder = jdbcTemplate.query(itemToOrderSql, new OrderRequestMapper(), order.getId());
+            if (itemToOrder.size() == 0) {
+                String delOrderSql = String.format("DELETE FROM %s WHERE id = ?", ORDERS_TABLE);
+                jdbcTemplate.update(delOrderSql, order.getId());
+            }
             return "The item hes been successfully removed from the order";
         } catch (Exception e) {
             return e.getMessage();
@@ -62,10 +66,23 @@ public class OrderRepository implements OrderRepositoryInterface{
     }
 
     @Override
+    public Order updateAddressInOrder(UpdateAddressRequest updateAddressRequest) {
+        try {
+            String sql = String.format("UPDATE %s SET shipping_address = ? WHERE id = ?", ORDERS_TABLE);
+            jdbcTemplate.update(sql, updateAddressRequest.getShippingAddress(), updateAddressRequest.getOrderId());
+            Order updatedOrder = getOrderById(updateAddressRequest.getOrderId());
+            return updatedOrder;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
     public Order hasOpenOrder(Integer userId) {
         try {
             String sql = String.format("SELECT * FROM %s WHERE user_id = ? AND status = ?", ORDERS_TABLE);
-            Order openOrder = jdbcTemplate.queryForObject(sql, new OrderMapper(), userId, "TEMP");
+            Order openOrder = jdbcTemplate.queryForObject(sql, new OrderMapper(), userId, OrderStatus.TEMP.name());
             return openOrder;
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -78,7 +95,7 @@ public class OrderRepository implements OrderRepositoryInterface{
         try {
             String sql = String.format("SELECT * FROM %s WHERE item_id = ? AND order_id = ?", ITEM_TO_ORDER_TABLE);
             List<OrderRequest> itemToOrder = jdbcTemplate.query(sql, new OrderRequestMapper(), orderRequest.getItemId(), orderRequest.getOrderId());
-            if(itemToOrder.size() == 0){
+            if (itemToOrder.size() == 0) {
                 return false;
             }
             return true;
@@ -131,7 +148,7 @@ public class OrderRepository implements OrderRepositoryInterface{
     public Order closeOrder(Integer id) {
         try {
             String sql = String.format("UPDATE %s SET status = ?, order_date = current_date WHERE id = ?", ORDERS_TABLE);
-            jdbcTemplate.update(sql, "CLOSE", id);
+            jdbcTemplate.update(sql, OrderStatus.CLOSE.name(), id);
             String additionalSql = String.format("SELECT items.id, items.title, items.picture, items.usd_price, items.amount FROM %s \n" +
                     "INNER JOIN %s \n" +
                     "ON items.id = item_to_order.item_id \n" +
@@ -140,7 +157,7 @@ public class OrderRepository implements OrderRepositoryInterface{
             HashMap<Integer, Integer> hashMap = new HashMap<Integer, Integer>();
             List<Item> unrepeatedItems = new ArrayList<Item>();
             orderItems.forEach(item -> {
-                if(hashMap.get(item.getId()) != null){
+                if (hashMap.get(item.getId()) != null) {
                     hashMap.put(item.getId(), hashMap.get(item.getId()) + 1);
                 } else {
                     unrepeatedItems.add(item);

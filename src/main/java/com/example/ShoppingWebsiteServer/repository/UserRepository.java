@@ -6,11 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class UserRepository implements UserRepositoryInterface{
+public class UserRepository implements UserRepositoryInterface {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private static final String USERS_TABLE = "users";
@@ -20,23 +19,25 @@ public class UserRepository implements UserRepositoryInterface{
     private static final String ITEM_TO_ORDER_TABLE = "item_to_order";
 
     @Override
-    public String register(User user) {
-        try{
+    public User register(User user) {
+        try {
             String sql = String.format("INSERT INTO %s (first_name, last_name, email, phone, address) VALUES (?,?,?,?,?)", USERS_TABLE);
             jdbcTemplate.update(sql, user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhone(), user.getAddress());
-            return "User created successfully";
-        } catch (Exception e){
-            return e.getMessage();
+            User connectedUser = signIn(user.getEmail());
+            return connectedUser;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
         }
     }
 
     @Override
-    public User signIn(Integer id) {
+    public User signIn(String email) {
         try {
-            String sql = String.format("UPDATE %s SET is_connected = ? WHERE id = ?", USERS_TABLE);
-            jdbcTemplate.update(sql, true, id);
-            User updatedUser = getUserById(id);
-            return updatedUser;
+            String sql = String.format("UPDATE %s SET is_connected = ? WHERE email = ?", USERS_TABLE);
+            jdbcTemplate.update(sql, true, email);
+            User connectedUser = getUserByEmail(email);
+            return connectedUser;
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
@@ -82,6 +83,18 @@ public class UserRepository implements UserRepositoryInterface{
         try {
             String sql = String.format("SELECT * FROM %s WHERE id = ?", USERS_TABLE);
             User user = jdbcTemplate.queryForObject(sql, new UserMapper(), id);
+            return user;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        try {
+            String sql = String.format("SELECT * FROM %s WHERE email = ?", USERS_TABLE);
+            User user = jdbcTemplate.queryForObject(sql, new UserMapper(), email);
             return user;
         } catch (Exception e) {
             System.out.println(e.getMessage());

@@ -3,6 +3,7 @@ package com.example.ShoppingWebsiteServer.repository;
 import com.example.ShoppingWebsiteServer.model.Item;
 import com.example.ShoppingWebsiteServer.model.Order;
 import com.example.ShoppingWebsiteServer.model.OrderRequest;
+import com.example.ShoppingWebsiteServer.model.UpdateAddressRequest;
 
 import java.util.List;
 
@@ -12,6 +13,8 @@ public interface OrderRepositoryInterface {
     Item addItemToOrder(Item item, Order order);
 
     String removeItemFromOrder(Item item, Order order);
+
+    Order updateAddressInOrder(UpdateAddressRequest updateAddressRequest);
 
     Order hasOpenOrder(Integer userId);
 

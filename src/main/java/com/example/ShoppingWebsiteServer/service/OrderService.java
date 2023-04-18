@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class OrderService implements OrderServiceInterface{
+public class OrderService implements OrderServiceInterface {
 
     @Autowired
     private OrderRepository orderRepository;
@@ -18,53 +18,37 @@ public class OrderService implements OrderServiceInterface{
     private ItemRepository itemRepository;
     @Autowired
     private UserRepository userRepository;
+
     @Override
     public Integer createNewOrder(Order order) {
-        if(order.getUserId() == null){
-            System.out.println("Order not created, user id is required");
-            return -1; // Order not created
-        }
-        User user = userRepository.getUserById(order.getUserId());
-        if (user == null){
-            System.out.println("Order not created, the user with this id does not exist");
-            return -1; // Order not created
-        }
-        Order openOrder = orderRepository.hasOpenOrder(order.getUserId());
-        if(openOrder != null){
-            System.out.println("Order not created, the user has an existing open order in the system");
-            return -1; // Order not created
-        }
-        if(order.getShippingAddress() == null){
-            order.setShippingAddress(user.getAddress());
-        }
         return orderRepository.createNewOrder(order);
     }
 
     @Override
     public Item addItemToOrder(FavoriteRequest favoriteRequest) {
-        if(favoriteRequest.getItemId() == null){
+        if (favoriteRequest.getItemId() == null) {
             System.out.println("You cannot add an item to order without item id");
             return null;
         }
-        if(favoriteRequest.getUserId() == null){
+        if (favoriteRequest.getUserId() == null) {
             System.out.println("You cannot add an item to order without user id");
             return null;
         }
         Item item = itemRepository.getItemById(favoriteRequest.getItemId());
-        if(item == null){
+        if (item == null) {
             System.out.println("The item with this id does not exist in the system");
             return null;
         }
         User user = userRepository.getUserById(favoriteRequest.getUserId());
-        if(user == null){
+        if (user == null) {
             System.out.println("The user with this id does not exist in the system");
             return null;
         }
         Order openOrder = hasOpenOrder(favoriteRequest.getUserId());
-        if(openOrder == null){
-            Order newOrder = new Order(favoriteRequest.getUserId());
+        if (openOrder == null) {
+            Order newOrder = new Order(favoriteRequest.getUserId(), user.getAddress());
             Integer orderId = createNewOrder(newOrder);
-            if(orderId == -1){
+            if (orderId == -1) {
                 System.out.println("The creation of the order failed, so an item cannot be added to the order");
                 return null;
             }
@@ -75,37 +59,68 @@ public class OrderService implements OrderServiceInterface{
 
     @Override
     public String removeItemFromOrder(OrderRequest orderRequest) {
-        if(orderRequest.getItemId() == null){
+        if (orderRequest.getItemId() == null) {
             return "You cannot remove an item from order without item id";
         }
-        if(orderRequest.getOrderId() == null){
+        if (orderRequest.getOrderId() == null) {
             return "You cannot remove an item from order without order id";
         }
         Item item = itemRepository.getItemById(orderRequest.getItemId());
-        if(item == null){
+        if (item == null) {
             return "The item with this id does not exist in the system";
         }
         Order order = orderRepository.getOrderById(orderRequest.getOrderId());
-        if(order == null) {
+        if (order == null) {
             return "The order with this id does not exist in the system";
         }
-        if(!isItemInTheOrder(orderRequest)){
+        User user = userRepository.getUserById(order.getUserId());
+        if (!user.getIsConnected()) {
+            return "The user is not logged in and therefore cannot make changes to the order";
+        }
+        if (!isItemInTheOrder(orderRequest)) {
             return "The item is not in order and therefore cannot be removed from there";
         }
-        if(order.getStatus() == OrderStatus.CLOSE){
+        if (order.getStatus() == OrderStatus.CLOSE) {
             return "It is not possible to remove an item from a closed order";
         }
         return orderRepository.removeItemFromOrder(item, order);
     }
 
     @Override
+    public Order updateAddressInOrder(UpdateAddressRequest updateAddressRequest) {
+        if (updateAddressRequest.getOrderId() == null) {
+            System.out.println("You cannot update address in order without order id");
+            return null;
+        }
+        if (updateAddressRequest.getShippingAddress() == null || updateAddressRequest.getShippingAddress().trim().isEmpty()) {
+            System.out.println("You cannot update address in order without address");
+            return null;
+        }
+        Order order = orderRepository.getOrderById(updateAddressRequest.getOrderId());
+        if (order == null) {
+            System.out.println("The order with this id does not exist in the system");
+            return null;
+        }
+        if (order.getStatus() == OrderStatus.CLOSE) {
+            System.out.println("It is not possible to change the shipping address of a closed order");
+            return null;
+        }
+        User user = userRepository.getUserById(order.getUserId());
+        if (!user.getIsConnected()) {
+            System.out.println("The user is not logged in and therefore cannot make changes to the order");
+            return null;
+        }
+        return orderRepository.updateAddressInOrder(updateAddressRequest);
+    }
+
+    @Override
     public Order hasOpenOrder(Integer userId) {
-        if(userId == null){
+        if (userId == null) {
             System.out.println("You cannot get order without user id");
             return null;
         }
         User user = userRepository.getUserById(userId);
-        if(user == null) {
+        if (user == null) {
             System.out.println("The user with this id does not exist in the system");
             return null;
         }
@@ -119,7 +134,7 @@ public class OrderService implements OrderServiceInterface{
 
     @Override
     public Order getOrderById(Integer orderId) {
-        if(orderId == null) {
+        if (orderId == null) {
             System.out.println("The order cannot be accepted without order id");
             return null;
         }
@@ -142,13 +157,18 @@ public class OrderService implements OrderServiceInterface{
 
     @Override
     public List<Item> getOrderItems(Integer id) {
-        if(id == null){
+        if (id == null) {
             System.out.println("You cannot get order items without order id");
             return null;
         }
         Order order = orderRepository.getOrderById(id);
-        if(order == null){
+        if (order == null) {
             System.out.println("The order with this id does not exist in the system");
+            return null;
+        }
+        User user = userRepository.getUserById(order.getUserId());
+        if (!user.getIsConnected()) {
+            System.out.println("The user is not logged in and therefore cannot receive information about the items in the order");
             return null;
         }
         return orderRepository.getOrderItems(id);
@@ -156,13 +176,18 @@ public class OrderService implements OrderServiceInterface{
 
     @Override
     public Order closeOrder(Integer id) {
-        if(id == null){
+        if (id == null) {
             System.out.println("You cannot close order without order id");
             return null;
         }
         Order order = orderRepository.getOrderById(id);
-        if(order == null){
+        if (order == null) {
             System.out.println("The order with this id does not exist in the system");
+            return null;
+        }
+        User user = userRepository.getUserById(order.getUserId());
+        if (!user.getIsConnected()) {
+            System.out.println("The user is not logged in and therefore cannot make changes to the order");
             return null;
         }
         return orderRepository.closeOrder(id);

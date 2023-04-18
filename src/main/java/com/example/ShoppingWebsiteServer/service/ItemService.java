@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ItemService implements ItemServiceInterface{
+public class ItemService implements ItemServiceInterface {
 
     @Autowired
     private ItemRepository itemRepository;
@@ -20,25 +20,25 @@ public class ItemService implements ItemServiceInterface{
 
     @Override
     public Item addToFavorites(FavoriteRequest favoriteRequest) {
-        if(favoriteRequest.getItemId() == null){
+        if (favoriteRequest.getItemId() == null) {
             System.out.println("You cannot add an item to favorites without item id");
             return null;
         }
-        if(favoriteRequest.getUserId() == null){
+        if (favoriteRequest.getUserId() == null) {
             System.out.println("You cannot add an item to favorites without user id");
             return null;
         }
         Item item = itemRepository.getItemById(favoriteRequest.getItemId());
-        if(item == null){
+        if (item == null) {
             System.out.println("The item with this id does not exist in the system");
             return null;
         }
         User user = userRepository.getUserById(favoriteRequest.getUserId());
-        if(user == null) {
+        if (user == null) {
             System.out.println("The user with this id does not exist in the system");
             return null;
         }
-        if(isFavoriteItem(favoriteRequest)){
+        if (isFavoriteItem(favoriteRequest)) {
             System.out.println("The item is already in the favorites");
             return null;
         }
@@ -47,13 +47,13 @@ public class ItemService implements ItemServiceInterface{
 
     @Override
     public String removeFromFavorites(FavoriteRequest favoriteRequest) {
-        if(favoriteRequest.getItemId() == null){
+        if (favoriteRequest.getItemId() == null) {
             return "You cannot remove an item from favorites without item id";
         }
-        if(favoriteRequest.getUserId() == null){
+        if (favoriteRequest.getUserId() == null) {
             return "You cannot remove an item from favorites without user id";
         }
-        if(!isFavoriteItem(favoriteRequest)){
+        if (!isFavoriteItem(favoriteRequest)) {
             return "The item is not in favorites and therefore cannot be removed from there";
         }
         return itemRepository.removeFromFavorites(favoriteRequest);
@@ -61,12 +61,12 @@ public class ItemService implements ItemServiceInterface{
 
     @Override
     public List<Item> getFavoritesByUserId(Integer id) {
-        if(id == null){
+        if (id == null) {
             System.out.println("You cannot get favorite items without user id");
             return null;
         }
         User user = userRepository.getUserById(id);
-        if(user == null) {
+        if (user == null) {
             System.out.println("The user with this id does not exist in the system");
             return null;
         }
@@ -76,11 +76,11 @@ public class ItemService implements ItemServiceInterface{
     @Override
     public List<Item> getFavoritesByName(Integer userid, String name) {
         List<Item> favorites = getFavoritesByUserId(userid);
-        if(favorites == null || favorites.size() == 0){
+        if (favorites == null || favorites.size() == 0) {
             System.out.println("This user has no favorite items");
             return null;
         }
-        if(name == null || name.trim().isEmpty()){
+        if (name == null || name.trim().isEmpty()) {
             System.out.println("name is null");
             return null;
         }
@@ -103,7 +103,7 @@ public class ItemService implements ItemServiceInterface{
 
     @Override
     public List<Item> getItemsByName(String name) {
-        if(name == null || name.trim().isEmpty()){
+        if (name == null || name.trim().isEmpty()) {
             System.out.println("name is null");
             return null;
         }

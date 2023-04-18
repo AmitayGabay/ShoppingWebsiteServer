@@ -52,7 +52,7 @@ public class User {
         this.email = email;
     }
 
-        public String getPhone() {
+    public String getPhone() {
         return phone;
     }
 
@@ -67,6 +67,7 @@ public class User {
     public void setAddress(String address) {
         this.address = address;
     }
+
     public Boolean getIsConnected() {
         return isConnected;
     }
