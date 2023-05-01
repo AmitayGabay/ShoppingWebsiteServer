@@ -39,7 +39,7 @@ public class OrderService implements OrderServiceInterface {
             System.out.println("The item with this id does not exist in the system");
             return null;
         }
-        User user = userRepository.getUserById(favoriteRequest.getUserId());
+        CustomUser user = userRepository.getUserById(favoriteRequest.getUserId());
         if (user == null) {
             System.out.println("The user with this id does not exist in the system");
             return null;
@@ -73,10 +73,6 @@ public class OrderService implements OrderServiceInterface {
         if (order == null) {
             return "The order with this id does not exist in the system";
         }
-        User user = userRepository.getUserById(order.getUserId());
-        if (!user.getIsConnected()) {
-            return "The user is not logged in and therefore cannot make changes to the order";
-        }
         if (!isItemInTheOrder(orderRequest)) {
             return "The item is not in order and therefore cannot be removed from there";
         }
@@ -105,11 +101,6 @@ public class OrderService implements OrderServiceInterface {
             System.out.println("It is not possible to change the shipping address of a closed order");
             return null;
         }
-        User user = userRepository.getUserById(order.getUserId());
-        if (!user.getIsConnected()) {
-            System.out.println("The user is not logged in and therefore cannot make changes to the order");
-            return null;
-        }
         return orderRepository.updateAddressInOrder(updateAddressRequest);
     }
 
@@ -119,7 +110,7 @@ public class OrderService implements OrderServiceInterface {
             System.out.println("You cannot get order without user id");
             return null;
         }
-        User user = userRepository.getUserById(userId);
+        CustomUser user = userRepository.getUserById(userId);
         if (user == null) {
             System.out.println("The user with this id does not exist in the system");
             return null;
@@ -147,7 +138,7 @@ public class OrderService implements OrderServiceInterface {
             System.out.println("You cannot get user orders without user id");
             return null;
         }
-        User user = userRepository.getUserById(id);
+        CustomUser user = userRepository.getUserById(id);
         if (user == null) {
             System.out.println("The user with this id does not exist in the system");
             return null;
@@ -166,11 +157,6 @@ public class OrderService implements OrderServiceInterface {
             System.out.println("The order with this id does not exist in the system");
             return null;
         }
-        User user = userRepository.getUserById(order.getUserId());
-        if (!user.getIsConnected()) {
-            System.out.println("The user is not logged in and therefore cannot receive information about the items in the order");
-            return null;
-        }
         return orderRepository.getOrderItems(id);
     }
 
@@ -183,11 +169,6 @@ public class OrderService implements OrderServiceInterface {
         Order order = orderRepository.getOrderById(id);
         if (order == null) {
             System.out.println("The order with this id does not exist in the system");
-            return null;
-        }
-        User user = userRepository.getUserById(order.getUserId());
-        if (!user.getIsConnected()) {
-            System.out.println("The user is not logged in and therefore cannot make changes to the order");
             return null;
         }
         return orderRepository.closeOrder(id);

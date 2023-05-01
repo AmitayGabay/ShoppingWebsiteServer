@@ -1,6 +1,6 @@
 package com.example.ShoppingWebsiteServer.service;
 
-import com.example.ShoppingWebsiteServer.model.User;
+import com.example.ShoppingWebsiteServer.model.CustomUser;
 import com.example.ShoppingWebsiteServer.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,48 +14,19 @@ public class UserService implements UserServiceInterface {
     private UserRepository userRepository;
 
     @Override
-    public User register(User user) {
-        if (user.getFirstName() == null || user.getLastName() == null || user.getEmail() == null || user.getAddress() == null) {
-            System.out.println("User not created, first name, last name, email and address are required");
+    public CustomUser register(CustomUser user) {
+        if (user.getFirstName() == null || user.getLastName() == null || user.getEmail() == null || user.getAddress() == null
+        || user.getUsername() == null || user.getPassword() == null) {
+            System.out.println("User not created, first name, last name, email, address, username and password are required");
+            return null;
+        }
+        CustomUser userWithTheSameEmail = getUserByEmail(user.getEmail());
+        CustomUser userWithTheSameUsername = getUserByUsername(user.getUsername());
+        if(userWithTheSameEmail != null || userWithTheSameUsername != null){
+            System.out.println("This email or username already exists in the system");
             return null;
         }
         return userRepository.register(user);
-    }
-
-    @Override
-    public User signIn(String email) {
-        if (email == null) {
-            System.out.println("email is required");
-            return null;
-        }
-        User registeredUser = userRepository.getUserByEmail(email);
-        if (registeredUser == null) {
-            System.out.println("The user with this email does not exist");
-            return null;
-        }
-        if (registeredUser.getIsConnected()) {
-            System.out.println("The user with this email is already connected");
-            return null;
-        }
-        return userRepository.signIn(email);
-    }
-
-    @Override
-    public User signOut(Integer id) {
-        if (id == null) {
-            System.out.println("id is required");
-            return null;
-        }
-        User registeredUser = userRepository.getUserById(id);
-        if (registeredUser == null) {
-            System.out.println("The user with this id does not exist");
-            return null;
-        }
-        if (!registeredUser.getIsConnected()) {
-            System.out.println("The user with this id does not connected");
-            return null;
-        }
-        return userRepository.signOut(id);
     }
 
     @Override
@@ -63,7 +34,7 @@ public class UserService implements UserServiceInterface {
         if (id == null) {
             return "It is not possible to delete the user without id";
         }
-        User registeredUser = userRepository.getUserById(id);
+        CustomUser registeredUser = userRepository.getUserById(id);
         if (registeredUser == null) {
             return "The user with this id does not exist, so it cannot be deleted";
         }
@@ -71,7 +42,7 @@ public class UserService implements UserServiceInterface {
     }
 
     @Override
-    public User getUserById(Integer id) {
+    public CustomUser getUserById(Integer id) {
         if (id == null) {
             System.out.println("It is not possible to accept the user without id");
             return null;
@@ -80,7 +51,16 @@ public class UserService implements UserServiceInterface {
     }
 
     @Override
-    public User getUserByEmail(String email) {
+    public CustomUser getUserByUsername(String username) {
+        if (username == null || username.trim().isEmpty()) {
+            System.out.println("It is not possible to accept the user without username");
+            return null;
+        }
+        return userRepository.getUserByUsername(username);
+    }
+
+    @Override
+    public CustomUser getUserByEmail(String email) {
         if (email == null || email.trim().isEmpty()) {
             System.out.println("It is not possible to accept the user without email");
             return null;
@@ -89,7 +69,7 @@ public class UserService implements UserServiceInterface {
     }
 
     @Override
-    public List<User> getAllUsers() {
+    public List<CustomUser> getAllUsers() {
         return userRepository.getAllUsers();
     }
 }

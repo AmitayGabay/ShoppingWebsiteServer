@@ -2,7 +2,7 @@ package com.example.ShoppingWebsiteServer.service;
 
 import com.example.ShoppingWebsiteServer.model.FavoriteRequest;
 import com.example.ShoppingWebsiteServer.model.Item;
-import com.example.ShoppingWebsiteServer.model.User;
+import com.example.ShoppingWebsiteServer.model.CustomUser;
 import com.example.ShoppingWebsiteServer.repository.ItemRepository;
 import com.example.ShoppingWebsiteServer.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class ItemService implements ItemServiceInterface {
             System.out.println("The item with this id does not exist in the system");
             return null;
         }
-        User user = userRepository.getUserById(favoriteRequest.getUserId());
+        CustomUser user = userRepository.getUserById(favoriteRequest.getUserId());
         if (user == null) {
             System.out.println("The user with this id does not exist in the system");
             return null;
@@ -65,7 +65,7 @@ public class ItemService implements ItemServiceInterface {
             System.out.println("You cannot get favorite items without user id");
             return null;
         }
-        User user = userRepository.getUserById(id);
+        CustomUser user = userRepository.getUserById(id);
         if (user == null) {
             System.out.println("The user with this id does not exist in the system");
             return null;

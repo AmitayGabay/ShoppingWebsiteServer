@@ -1,6 +1,6 @@
 package com.example.ShoppingWebsiteServer.controller;
 
-import com.example.ShoppingWebsiteServer.model.User;
+import com.example.ShoppingWebsiteServer.model.CustomUser;
 import com.example.ShoppingWebsiteServer.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,18 +14,8 @@ public class UserController {
     private UserService userService;
 
     @PostMapping(value = "/register")
-    public User createUser(@RequestBody User user) {
+    public CustomUser createUser(@RequestBody CustomUser user) {
         return userService.register(user);
-    }
-
-    @PutMapping(value = "/sign-in", params = "email")
-    public User signIn(@RequestParam String email) {
-        return userService.signIn(email);
-    }
-
-    @PutMapping(value = "/sign-out", params = "id")
-    public User signOut(@RequestParam Integer id) {
-        return userService.signOut(id);
     }
 
     @DeleteMapping(value = "/delete-user", params = "id")
@@ -34,17 +24,22 @@ public class UserController {
     }
 
     @GetMapping(params = "id")
-    public User getUserById(@RequestParam Integer id) {
+    public CustomUser getUserById(@RequestParam Integer id) {
         return userService.getUserById(id);
     }
 
+    @GetMapping(params = "username")
+    public CustomUser getUserByUsername(@RequestParam String username) {
+        return userService.getUserByUsername(username);
+    }
+
     @GetMapping(params = "email")
-    public User getUserByEmail(@RequestParam String email) {
+    public CustomUser getUserByEmail(@RequestParam String email) {
         return userService.getUserByEmail(email);
     }
 
     @GetMapping(value = "/all-users")
-    public List<User> getAllUsers() {
+    public List<CustomUser> getAllUsers() {
         return userService.getAllUsers();
     }
 }

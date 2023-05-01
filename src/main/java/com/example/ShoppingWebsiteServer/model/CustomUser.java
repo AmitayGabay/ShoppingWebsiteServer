@@ -2,7 +2,7 @@ package com.example.ShoppingWebsiteServer.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class User {
+public class CustomUser {
     private Integer id;
     @JsonProperty(value = "first_name")
     private String firstName;
@@ -11,17 +11,20 @@ public class User {
     private String email;
     private String phone;
     private String address;
-    @JsonProperty(value = "is_connected")
-    private Boolean isConnected;
 
-    public User(Integer id, String firstName, String lastName, String email, String phone, String address, Boolean isConnected) {
+    private String username;
+
+    private String password;
+
+    public CustomUser(Integer id, String firstName, String lastName, String email, String phone, String address, String username, String password) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phone = phone;
         this.address = address;
-        this.isConnected = isConnected;
+        this.username = username;
+        this.password = password;
     }
 
     public Integer getId() {
@@ -68,11 +71,19 @@ public class User {
         this.address = address;
     }
 
-    public Boolean getIsConnected() {
-        return isConnected;
+    public String getUsername() {
+        return username;
     }
 
-    public void setIsConnected(Boolean isConnected) {
-        this.isConnected = isConnected;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

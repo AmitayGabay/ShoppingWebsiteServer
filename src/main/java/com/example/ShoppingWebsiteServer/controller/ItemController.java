@@ -40,12 +40,12 @@ public class ItemController {
         return itemService.isFavoriteItem(favoriteRequest);
     }
 
-    @GetMapping(params = "id")
+    @GetMapping(value = "search", params = "id")
     public Item getItemById(@RequestParam Integer id) {
         return itemService.getItemById(id);
     }
 
-    @GetMapping(params = "name")
+    @GetMapping(value = "search", params = "name")
     public List<Item> getItemsByName(@RequestParam String name) {
         return itemService.getItemsByName(name);
     }

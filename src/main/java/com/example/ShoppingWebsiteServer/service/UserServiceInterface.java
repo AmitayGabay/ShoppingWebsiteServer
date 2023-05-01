@@ -1,21 +1,19 @@
 package com.example.ShoppingWebsiteServer.service;
 
-import com.example.ShoppingWebsiteServer.model.User;
+import com.example.ShoppingWebsiteServer.model.CustomUser;
 
 import java.util.List;
 
 public interface UserServiceInterface {
-    User register(User user);
-
-    User signIn(String email);
-
-    User signOut(Integer id);
+    CustomUser register(CustomUser user);
 
     String deleteUserById(Integer id);
 
-    User getUserById(Integer id);
+    CustomUser getUserById(Integer id);
 
-    User getUserByEmail(String email);
+    CustomUser getUserByUsername(String username);
 
-    List<User> getAllUsers();
+    CustomUser getUserByEmail(String email);
+
+    List<CustomUser> getAllUsers();
 }

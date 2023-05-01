@@ -1,20 +1,21 @@
 package com.example.ShoppingWebsiteServer.repository;
 
-import com.example.ShoppingWebsiteServer.model.User;
+import com.example.ShoppingWebsiteServer.model.CustomUser;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserMapper implements RowMapper<User> {
+public class UserMapper implements RowMapper<CustomUser> {
     @Override
-    public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-        return new User(rs.getInt("id"),
+    public CustomUser mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return new CustomUser(rs.getInt("id"),
                 rs.getString("first_name"),
                 rs.getString("last_name"),
                 rs.getString("email"),
                 rs.getString("phone"),
                 rs.getString("address"),
-                rs.getBoolean("is_connected"));
+                rs.getString("username"),
+                rs.getString("password"));
     }
 }

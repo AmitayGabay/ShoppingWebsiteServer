@@ -5,7 +5,8 @@ last_name varchar NOT NULL,
 email varchar UNIQUE NOT NULL,
 phone varchar,
 address varchar NOT NULL,
-is_connected boolean NOT NULL default false,
+username varchar UNIQUE NOT NULL,
+password varchar NOT NULL,
 PRIMARY KEY (id)
 );
 
@@ -18,17 +19,17 @@ amount int NOT NULL,
 PRIMARY KEY (id)
 );
 
-INSERT INTO users (first_name, last_name, email, phone, address)
-VALUES('a', 'aa', 'a@gmail.com', '0524436671', 'aen eliezer 45, netanya'),
-('b', 'bb', 'b@gmail.com', '0504380333', 'ben eliezer 45, netanya'),
-('c', 'cc', 'c@gmail.com', '0524125553', 'cen eliezer 45, netanya'),
-('d', 'dd', 'd@gmail.com', '0523715940', 'den eliezer 45, netanya'),
-('e', 'ee', 'e@gmail.com', '0548976525', 'een eliezer 45, netanya'),
-('f', 'ff', 'f@gmail.com', '0527468720', 'fen eliezer 45, netanya'),
-('g', 'gg', 'g@gmail.com', '0554809620', 'gen eliezer 45, netanya'),
-('h', 'hh', 'h@gmail.com', '0508887777', 'hen eliezer 45, netanya'),
-('i', 'ii', 'i@gmail.com', '0556632241', 'ien eliezer 45, netanya'),
-('j', 'jj', 'j@gmail.com', '0536645528', 'jen eliezer 45, netanya');
+INSERT INTO users (first_name, last_name, email, phone, address, username, password)
+VALUES('a', 'aa', 'a@gmail.com', '0524436671', 'aen eliezer 45, netanya', 'Amitay', 'Amitay@1'),
+('b', 'bb', 'b@gmail.com', '0504380333', 'ben eliezer 45, netanya', 'Bmitay', 'Bmitay@2'),
+('c', 'cc', 'c@gmail.com', '0524125553', 'cen eliezer 45, netanya', 'Cmitay', 'Cmitay@3'),
+('d', 'dd', 'd@gmail.com', '0523715940', 'den eliezer 45, netanya', 'Dmitay', 'Dmitay@4'),
+('e', 'ee', 'e@gmail.com', '0548976525', 'een eliezer 45, netanya', 'Emitay', 'Emitay@5'),
+('f', 'ff', 'f@gmail.com', '0527468720', 'fen eliezer 45, netanya', 'Fmitay', 'Fmitay@6'),
+('g', 'gg', 'g@gmail.com', '0554809620', 'gen eliezer 45, netanya', 'Gmitay', 'Gmitay@7'),
+('h', 'hh', 'h@gmail.com', '0508887777', 'hen eliezer 45, netanya', 'Hmitay', 'Hmitay@8'),
+('i', 'ii', 'i@gmail.com', '0556632241', 'ien eliezer 45, netanya', 'Imitay', 'Imitay@9'),
+('j', 'jj', 'j@gmail.com', '0536645528', 'jen eliezer 45, netanya', 'Jmitay', 'Jmitay@10');
 
 INSERT INTO items (title, picture, usd_price, amount)
 VALUES('helmet', 'https://m.media-amazon.com/images/W/IMAGERENDERING_521856-T1/images/I/613loUzm9WL._SL1500_.jpg', 15, 50),
