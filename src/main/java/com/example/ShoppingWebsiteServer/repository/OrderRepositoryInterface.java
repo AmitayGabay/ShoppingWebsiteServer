@@ -14,19 +14,19 @@ public interface OrderRepositoryInterface {
 
     String removeItemFromOrder(Item item, Order order);
 
-    Order updateAddressInOrder(UpdateAddressRequest updateAddressRequest);
+    Order updateAddressInOrder(UpdateAddressRequest updateAddressRequest, Integer userId);
 
     Order hasOpenOrder(Integer userId);
 
     Boolean isItemInTheOrder(OrderRequest orderRequest);
 
-    Order getOrderById(Integer orderId);
+    Order getOrderById(Integer orderId, Integer userId);
 
     List<Order> getUserOrders(Integer id);
 
     List<Item> getOrderItems(Integer id);
 
-    Order closeOrder(Integer id);
+    Order closeOrder(Integer id, Integer userId);
 
     List<Order> getAllOrders();
 }

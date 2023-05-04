@@ -2,6 +2,7 @@ package com.example.ShoppingWebsiteServer.controller;
 
 import com.example.ShoppingWebsiteServer.model.CustomUser;
 import com.example.ShoppingWebsiteServer.service.UserService;
+import com.example.ShoppingWebsiteServer.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,6 +11,9 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/user")
 public class UserController {
+
+    @Autowired
+    private JwtUtil jwtUtil;
     @Autowired
     private UserService userService;
 
@@ -18,22 +22,26 @@ public class UserController {
         return userService.register(user);
     }
 
-    @DeleteMapping(value = "/delete-user", params = "id")
-    public String deleteUser(@RequestParam Integer id) {
-        return userService.deleteUserById(id);
+    @DeleteMapping(value = "/delete-user", params = "Authorization")
+    public String deleteUser(@RequestParam(value = "Authorization") String token) {
+        String jwtToken = token.substring(7);
+        String username = jwtUtil.extractUsername(jwtToken);
+        return userService.deleteUser(username);
     }
 
-    @GetMapping(params = "id")
+    @GetMapping(value = "search", params = "id")
     public CustomUser getUserById(@RequestParam Integer id) {
         return userService.getUserById(id);
     }
 
-    @GetMapping(params = "username")
-    public CustomUser getUserByUsername(@RequestParam String username) {
+    @GetMapping(params = "Authorization")
+    public CustomUser getUserByUsername(@RequestParam(value = "Authorization") String token) {
+        String jwtToken = token.substring(7);
+        String username = jwtUtil.extractUsername(jwtToken);
         return userService.getUserByUsername(username);
     }
 
-    @GetMapping(params = "email")
+    @GetMapping(value = "search", params = "email")
     public CustomUser getUserByEmail(@RequestParam String email) {
         return userService.getUserByEmail(email);
     }

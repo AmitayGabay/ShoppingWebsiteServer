@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class OrderRepository implements OrderRepositoryInterface {
@@ -66,11 +67,11 @@ public class OrderRepository implements OrderRepositoryInterface {
     }
 
     @Override
-    public Order updateAddressInOrder(UpdateAddressRequest updateAddressRequest) {
+    public Order updateAddressInOrder(UpdateAddressRequest updateAddressRequest, Integer userId) {
         try {
             String sql = String.format("UPDATE %s SET shipping_address = ? WHERE id = ?", ORDERS_TABLE);
             jdbcTemplate.update(sql, updateAddressRequest.getShippingAddress(), updateAddressRequest.getOrderId());
-            Order updatedOrder = getOrderById(updateAddressRequest.getOrderId());
+            Order updatedOrder = getOrderById(updateAddressRequest.getOrderId(), userId);
             return updatedOrder;
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -106,10 +107,14 @@ public class OrderRepository implements OrderRepositoryInterface {
     }
 
     @Override
-    public Order getOrderById(Integer orderId) {
+    public Order getOrderById(Integer orderId, Integer userId) {
         try {
             String sql = String.format("SELECT * FROM %s WHERE id = ?", ORDERS_TABLE);
             Order order = jdbcTemplate.queryForObject(sql, new OrderMapper(), orderId);
+            if(order != null && !Objects.equals(order.getUserId(), userId)){
+                System.out.println("This order does not belong to the user, so he cannot accept it");
+                return null;
+            }
             return order;
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -145,7 +150,7 @@ public class OrderRepository implements OrderRepositoryInterface {
     }
 
     @Override
-    public Order closeOrder(Integer id) {
+    public Order closeOrder(Integer id, Integer userId) {
         try {
             String sql = String.format("UPDATE %s SET status = ?, order_date = current_date WHERE id = ?", ORDERS_TABLE);
             jdbcTemplate.update(sql, OrderStatus.CLOSE.name(), id);
@@ -168,7 +173,7 @@ public class OrderRepository implements OrderRepositoryInterface {
                 String amountSql = String.format("UPDATE %s SET amount = ? WHERE id = ?", ITEMS_TABLE);
                 jdbcTemplate.update(amountSql, item.getAmount() - hashMap.get(item.getId()), item.getId());
             });
-            Order updatedOrder = getOrderById(id);
+            Order updatedOrder = getOrderById(id, userId);
             return updatedOrder;
         } catch (Exception e) {
             System.out.println(e.getMessage());

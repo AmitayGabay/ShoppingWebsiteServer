@@ -7,23 +7,23 @@ import java.util.List;
 public interface OrderServiceInterface {
     Integer createNewOrder(Order order);
 
-    Item addItemToOrder(FavoriteRequest favoriteRequest);
+    Item addItemToOrder(String username, Integer itemId);
 
-    String removeItemFromOrder(OrderRequest orderRequest);
+    String removeItemFromOrder(String username, OrderRequest orderRequest);
 
-    Order updateAddressInOrder(UpdateAddressRequest updateAddressRequest);
+    Order updateAddressInOrder(String username, UpdateAddressRequest updateAddressRequest);
 
     Order hasOpenOrder(Integer userId);
 
     Boolean isItemInTheOrder(OrderRequest orderRequest);
 
-    Order getOrderById(Integer orderId);
+    Order getOrderById(String username, Integer orderId);
 
-    List<Order> getUserOrders(Integer id);
+    List<Order> getUserOrders(String username);
 
-    List<Item> getOrderItems(Integer id);
+    List<Item> getOrderItems(String username, Integer id);
 
-    Order closeOrder(Integer id);
+    Order closeOrder(String username, Integer id);
 
     List<Order> getAllOrders();
 }

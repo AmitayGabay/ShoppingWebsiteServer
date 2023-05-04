@@ -2,6 +2,7 @@ package com.example.ShoppingWebsiteServer.controller;
 
 import com.example.ShoppingWebsiteServer.model.*;
 import com.example.ShoppingWebsiteServer.service.OrderService;
+import com.example.ShoppingWebsiteServer.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,51 +13,58 @@ import java.util.List;
 public class OrderController {
 
     @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
     private OrderService orderService;
 
-    @PostMapping(value = "add-item-to-order")
-    public Item addItemToOrder(@RequestBody FavoriteRequest favoriteRequest) {
-        return orderService.addItemToOrder(favoriteRequest);
+    @PostMapping(value = "add-item-to-order", params = "Authorization")
+    public Item addItemToOrder( @RequestParam(value = "Authorization") String token, @RequestBody Integer itemId) {
+        String jwtToken = token.substring(7);
+        String username = jwtUtil.extractUsername(jwtToken);
+        return orderService.addItemToOrder(username, itemId);
     }
 
-    @DeleteMapping(value = "remove-item-from-order")
-    public String removeItemFromOrder(@RequestBody OrderRequest orderRequest) {
-        return orderService.removeItemFromOrder(orderRequest);
+    @DeleteMapping(value = "remove-item-from-order", params = "Authorization")
+    public String removeItemFromOrder(@RequestParam(value = "Authorization") String token, @RequestBody OrderRequest orderRequest) {
+        String jwtToken = token.substring(7);
+        String username = jwtUtil.extractUsername(jwtToken);
+        return orderService.removeItemFromOrder(username, orderRequest);
     }
 
-    @PutMapping(value = "apdate-address-in-order")
-    public Order updateAddressInOrder(@RequestBody UpdateAddressRequest updateAddressRequest) {
-        return orderService.updateAddressInOrder(updateAddressRequest);
+    @PutMapping(value = "apdate-address-in-order", params = "Authorization")
+    public Order updateAddressInOrder(@RequestParam(value = "Authorization") String token, @RequestBody UpdateAddressRequest updateAddressRequest) {
+        String jwtToken = token.substring(7);
+        String username = jwtUtil.extractUsername(jwtToken);
+        return orderService.updateAddressInOrder(username, updateAddressRequest);
     }
 
-    @GetMapping(params = "userid")
-    public Order hasOpenOrder(@RequestParam(value = "userid") Integer userId) {
-        return orderService.hasOpenOrder(userId);
+    @GetMapping(params = {"Authorization", "orderid"})
+    public Order getOrderById(@RequestParam(value = "Authorization") String token, @RequestParam(value = "orderid") Integer orderId) {
+        String jwtToken = token.substring(7);
+        String username = jwtUtil.extractUsername(jwtToken);
+        return orderService.getOrderById(username, orderId);
     }
 
-    @PostMapping(value = "is-item-in-the-order")
-    public Boolean isItemInTheOrder(@RequestBody OrderRequest orderRequest) {
-        return orderService.isItemInTheOrder(orderRequest);
+    @GetMapping(value = "/user-orders", params = "Authorization")
+    public List<Order> getUserOrders(@RequestParam(value = "Authorization") String token) {
+        String jwtToken = token.substring(7);
+        String username = jwtUtil.extractUsername(jwtToken);
+        return orderService.getUserOrders(username);
     }
 
-    @GetMapping(params = "orderid")
-    public Order getOrderById(@RequestParam(value = "orderid") Integer orderId) {
-        return orderService.getOrderById(orderId);
+    @GetMapping(value = "/order-items", params = {"Authorization", "id"})
+    public List<Item> getOrderItems(@RequestParam(value = "Authorization") String token, @RequestParam Integer id) {
+        String jwtToken = token.substring(7);
+        String username = jwtUtil.extractUsername(jwtToken);
+        return orderService.getOrderItems(username, id);
     }
 
-    @GetMapping(value = "/user-orders", params = "id")
-    public List<Order> getUserOrders(@RequestParam Integer id) {
-        return orderService.getUserOrders(id);
-    }
-
-    @GetMapping(value = "/order-items", params = "id")
-    public List<Item> getOrderItems(@RequestParam Integer id) {
-        return orderService.getOrderItems(id);
-    }
-
-    @PutMapping(value = "/close", params = "id")
-    public Order closeOrder(@RequestParam Integer id) {
-        return orderService.closeOrder(id);
+    @PutMapping(value = "/close", params = {"Authorization", "id"})
+    public Order closeOrder(@RequestParam(value = "Authorization") String token, @RequestParam Integer id) {
+        String jwtToken = token.substring(7);
+        String username = jwtUtil.extractUsername(jwtToken);
+        return orderService.closeOrder(username, id);
     }
 
     @GetMapping(value = "/all-orders")

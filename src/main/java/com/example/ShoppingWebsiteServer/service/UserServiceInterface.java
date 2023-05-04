@@ -7,7 +7,7 @@ import java.util.List;
 public interface UserServiceInterface {
     CustomUser register(CustomUser user);
 
-    String deleteUserById(Integer id);
+    String deleteUser(String username);
 
     CustomUser getUserById(Integer id);
 

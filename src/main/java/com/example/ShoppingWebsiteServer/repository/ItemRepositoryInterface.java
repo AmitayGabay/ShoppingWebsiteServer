@@ -10,7 +10,7 @@ public interface ItemRepositoryInterface {
 
     String removeFromFavorites(FavoriteRequest favoriteRequest);
 
-    List<Item> getFavoritesByUserId(Integer id);
+    List<Item> getFavorites(Integer id);
 
     List<Item> getFavoritesByName(List<Item> favorites, String name);
 

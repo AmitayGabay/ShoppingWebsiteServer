@@ -6,13 +6,13 @@ import com.example.ShoppingWebsiteServer.model.Item;
 import java.util.List;
 
 public interface ItemServiceInterface {
-    Item addToFavorites(FavoriteRequest favoriteRequest);
+    Item addToFavorites(String username, Integer itemId);
 
-    String removeFromFavorites(FavoriteRequest favoriteRequest);
+    String removeFromFavorites(String username, Integer itemId);
 
-    List<Item> getFavoritesByUserId(Integer id);
+    List<Item> getFavorites(String username);
 
-    List<Item> getFavoritesByName(Integer userid, String name);
+    List<Item> getFavoritesByName(String username, String name);
 
     Boolean isFavoriteItem(FavoriteRequest favoriteRequest);
 

@@ -33,7 +33,7 @@ public class UserRepository implements UserRepositoryInterface {
     }
 
     @Override
-    public String deleteUserById(Integer id) {
+    public String deleteUser(Integer id) {
         try {
             String favoriteSql = String.format("DELETE FROM %s WHERE user_id = ?", ITEM_TO_USER_TABLE);
             jdbcTemplate.update(favoriteSql, id);
@@ -71,7 +71,6 @@ public class UserRepository implements UserRepositoryInterface {
         try {
             String sql = String.format("SELECT * FROM %s WHERE username = ?", USERS_TABLE);
             CustomUser user = jdbcTemplate.queryForObject(sql, new UserMapper(), username);
-            user.setPassword("******");
             return user;
         } catch (Exception e) {
             System.out.println(e.getMessage());

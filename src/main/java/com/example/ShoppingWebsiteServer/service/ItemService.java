@@ -19,25 +19,26 @@ public class ItemService implements ItemServiceInterface {
     private UserRepository userRepository;
 
     @Override
-    public Item addToFavorites(FavoriteRequest favoriteRequest) {
-        if (favoriteRequest.getItemId() == null) {
+    public Item addToFavorites(String username, Integer itemId) {
+        if (itemId == null) {
             System.out.println("You cannot add an item to favorites without item id");
             return null;
         }
-        if (favoriteRequest.getUserId() == null) {
-            System.out.println("You cannot add an item to favorites without user id");
+        if (username == null) {
+            System.out.println("You cannot add an item to favorites without username");
             return null;
         }
-        Item item = itemRepository.getItemById(favoriteRequest.getItemId());
+        Item item = itemRepository.getItemById(itemId);
         if (item == null) {
             System.out.println("The item with this id does not exist in the system");
             return null;
         }
-        CustomUser user = userRepository.getUserById(favoriteRequest.getUserId());
+        CustomUser user = userRepository.getUserByUsername(username);
         if (user == null) {
-            System.out.println("The user with this id does not exist in the system");
+            System.out.println("The user with this username does not exist in the system");
             return null;
         }
+        FavoriteRequest favoriteRequest = new FavoriteRequest(itemId, user.getId());
         if (isFavoriteItem(favoriteRequest)) {
             System.out.println("The item is already in the favorites");
             return null;
@@ -46,13 +47,18 @@ public class ItemService implements ItemServiceInterface {
     }
 
     @Override
-    public String removeFromFavorites(FavoriteRequest favoriteRequest) {
-        if (favoriteRequest.getItemId() == null) {
+    public String removeFromFavorites(String username, Integer itemId) {
+        if (itemId == null) {
             return "You cannot remove an item from favorites without item id";
         }
-        if (favoriteRequest.getUserId() == null) {
-            return "You cannot remove an item from favorites without user id";
+        if (username == null) {
+            return "You cannot remove an item from favorites without username";
         }
+        CustomUser user = userRepository.getUserByUsername(username);
+        if (user == null) {
+            return "The user with this username does not exist in the system";
+        }
+        FavoriteRequest favoriteRequest = new FavoriteRequest(itemId, user.getId());
         if (!isFavoriteItem(favoriteRequest)) {
             return "The item is not in favorites and therefore cannot be removed from there";
         }
@@ -60,22 +66,22 @@ public class ItemService implements ItemServiceInterface {
     }
 
     @Override
-    public List<Item> getFavoritesByUserId(Integer id) {
-        if (id == null) {
-            System.out.println("You cannot get favorite items without user id");
+    public List<Item> getFavorites(String username) {
+        if (username == null) {
+            System.out.println("You cannot get favorite items without username");
             return null;
         }
-        CustomUser user = userRepository.getUserById(id);
+        CustomUser user = userRepository.getUserByUsername(username);
         if (user == null) {
             System.out.println("The user with this id does not exist in the system");
             return null;
         }
-        return itemRepository.getFavoritesByUserId(id);
+        return itemRepository.getFavorites(user.getId());
     }
 
     @Override
-    public List<Item> getFavoritesByName(Integer userid, String name) {
-        List<Item> favorites = getFavoritesByUserId(userid);
+    public List<Item> getFavoritesByName(String username, String name) {
+        List<Item> favorites = getFavorites(username);
         if (favorites == null || favorites.size() == 0) {
             System.out.println("This user has no favorite items");
             return null;

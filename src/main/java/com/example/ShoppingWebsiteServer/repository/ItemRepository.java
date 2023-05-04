@@ -41,7 +41,7 @@ public class ItemRepository implements ItemRepositoryInterface {
     }
 
     @Override
-    public List<Item> getFavoritesByUserId(Integer id) {
+    public List<Item> getFavorites(Integer id) {
         try {
             String sql = String.format("SELECT items.id, items.title, items.picture, items.usd_price, items.amount FROM %s \n" +
                     "INNER JOIN %s \n" +

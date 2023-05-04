@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class OrderService implements OrderServiceInterface {
@@ -25,25 +26,26 @@ public class OrderService implements OrderServiceInterface {
     }
 
     @Override
-    public Item addItemToOrder(FavoriteRequest favoriteRequest) {
-        if (favoriteRequest.getItemId() == null) {
+    public Item addItemToOrder(String username, Integer itemId) {
+        if (itemId == null) {
             System.out.println("You cannot add an item to order without item id");
             return null;
         }
-        if (favoriteRequest.getUserId() == null) {
-            System.out.println("You cannot add an item to order without user id");
+        if (username == null) {
+            System.out.println("You cannot add an item to order without username");
             return null;
         }
-        Item item = itemRepository.getItemById(favoriteRequest.getItemId());
+        Item item = itemRepository.getItemById(itemId);
         if (item == null) {
             System.out.println("The item with this id does not exist in the system");
             return null;
         }
-        CustomUser user = userRepository.getUserById(favoriteRequest.getUserId());
+        CustomUser user = userRepository.getUserByUsername(username);
         if (user == null) {
-            System.out.println("The user with this id does not exist in the system");
+            System.out.println("The user with this username does not exist in the system");
             return null;
         }
+        FavoriteRequest favoriteRequest = new FavoriteRequest(itemId, user.getId());
         Order openOrder = hasOpenOrder(favoriteRequest.getUserId());
         if (openOrder == null) {
             Order newOrder = new Order(favoriteRequest.getUserId(), user.getAddress());
@@ -52,13 +54,16 @@ public class OrderService implements OrderServiceInterface {
                 System.out.println("The creation of the order failed, so an item cannot be added to the order");
                 return null;
             }
-            openOrder = getOrderById(orderId);
+            openOrder = getOrderById(username, orderId);
         }
         return orderRepository.addItemToOrder(item, openOrder);
     }
 
     @Override
-    public String removeItemFromOrder(OrderRequest orderRequest) {
+    public String removeItemFromOrder(String username, OrderRequest orderRequest) {
+        if (username == null) {
+            return "You cannot remove an item from order without username";
+        }
         if (orderRequest.getItemId() == null) {
             return "You cannot remove an item from order without item id";
         }
@@ -69,7 +74,11 @@ public class OrderService implements OrderServiceInterface {
         if (item == null) {
             return "The item with this id does not exist in the system";
         }
-        Order order = orderRepository.getOrderById(orderRequest.getOrderId());
+        CustomUser user = userRepository.getUserByUsername(username);
+        if (user == null) {
+            return "The user with this username does not exist in the system";
+        }
+        Order order = orderRepository.getOrderById(orderRequest.getOrderId(), user.getId());
         if (order == null) {
             return "The order with this id does not exist in the system";
         }
@@ -83,7 +92,10 @@ public class OrderService implements OrderServiceInterface {
     }
 
     @Override
-    public Order updateAddressInOrder(UpdateAddressRequest updateAddressRequest) {
+    public Order updateAddressInOrder(String username,UpdateAddressRequest updateAddressRequest) {
+        if (username == null) {
+            System.out.println("You cannot update address in order without username");
+        }
         if (updateAddressRequest.getOrderId() == null) {
             System.out.println("You cannot update address in order without order id");
             return null;
@@ -92,7 +104,12 @@ public class OrderService implements OrderServiceInterface {
             System.out.println("You cannot update address in order without address");
             return null;
         }
-        Order order = orderRepository.getOrderById(updateAddressRequest.getOrderId());
+        CustomUser user = userRepository.getUserByUsername(username);
+        if (user == null) {
+            System.out.println("The user with this username does not exist in the system");
+            return null;
+        }
+        Order order = orderRepository.getOrderById(updateAddressRequest.getOrderId(), user.getId());
         if (order == null) {
             System.out.println("The order with this id does not exist in the system");
             return null;
@@ -101,20 +118,11 @@ public class OrderService implements OrderServiceInterface {
             System.out.println("It is not possible to change the shipping address of a closed order");
             return null;
         }
-        return orderRepository.updateAddressInOrder(updateAddressRequest);
+        return orderRepository.updateAddressInOrder(updateAddressRequest, user.getId());
     }
 
     @Override
     public Order hasOpenOrder(Integer userId) {
-        if (userId == null) {
-            System.out.println("You cannot get order without user id");
-            return null;
-        }
-        CustomUser user = userRepository.getUserById(userId);
-        if (user == null) {
-            System.out.println("The user with this id does not exist in the system");
-            return null;
-        }
         return orderRepository.hasOpenOrder(userId);
     }
 
@@ -124,54 +132,85 @@ public class OrderService implements OrderServiceInterface {
     }
 
     @Override
-    public Order getOrderById(Integer orderId) {
+    public Order getOrderById(String username, Integer orderId) {
+        if (username == null) {
+            System.out.println("You cannot update address in order without username");
+            return null;
+        }
         if (orderId == null) {
             System.out.println("The order cannot be accepted without order id");
             return null;
         }
-        return orderRepository.getOrderById(orderId);
+        CustomUser user = userRepository.getUserByUsername(username);
+        if (user == null) {
+            System.out.println("The user with this username does not exist in the system");
+            return null;
+        }
+        return orderRepository.getOrderById(orderId, user.getId());
     }
 
     @Override
-    public List<Order> getUserOrders(Integer id) {
-        if (id == null) {
-            System.out.println("You cannot get user orders without user id");
+    public List<Order> getUserOrders(String username) {
+        if (username == null) {
+            System.out.println("You cannot get user orders without username");
             return null;
         }
-        CustomUser user = userRepository.getUserById(id);
+        CustomUser user = userRepository.getUserByUsername(username);
         if (user == null) {
             System.out.println("The user with this id does not exist in the system");
             return null;
         }
-        return orderRepository.getUserOrders(id);
+        return orderRepository.getUserOrders(user.getId());
     }
 
     @Override
-    public List<Item> getOrderItems(Integer id) {
+    public List<Item> getOrderItems(String username, Integer id) {
+        if (username == null) {
+            System.out.println("You cannot get order items without username");
+            return null;
+        }
         if (id == null) {
             System.out.println("You cannot get order items without order id");
             return null;
         }
-        Order order = orderRepository.getOrderById(id);
+        CustomUser user = userRepository.getUserByUsername(username);
+        if (user == null) {
+            System.out.println("The user with this id does not exist in the system");
+            return null;
+        }
+        Order order = orderRepository.getOrderById(id, user.getId());
         if (order == null) {
             System.out.println("The order with this id does not exist in the system");
+            return null;
+        }
+        if(!Objects.equals(order.getUserId(), user.getId())) {
+            System.out.println("This order does not belong to the user, so he cannot receive its items");
             return null;
         }
         return orderRepository.getOrderItems(id);
     }
 
     @Override
-    public Order closeOrder(Integer id) {
+    public Order closeOrder(String username, Integer id) {
+        if (username == null) {
+            System.out.println("You cannot close the order without username");
+            return null;
+        }
         if (id == null) {
             System.out.println("You cannot close order without order id");
             return null;
         }
-        Order order = orderRepository.getOrderById(id);
+        CustomUser user = userRepository.getUserByUsername(username);
+        if (user == null) {
+            System.out.println("The user with this id does not exist in the system");
+            return null;
+        }
+        Order order = orderRepository.getOrderById(id, user.getId());
         if (order == null) {
             System.out.println("The order with this id does not exist in the system");
             return null;
         }
-        return orderRepository.closeOrder(id);
+        return orderRepository.closeOrder(id, user.getId());
     }
 
     @Override

@@ -30,15 +30,15 @@ public class UserService implements UserServiceInterface {
     }
 
     @Override
-    public String deleteUserById(Integer id) {
-        if (id == null) {
-            return "It is not possible to delete the user without id";
+    public String deleteUser(String username) {
+        if (username == null) {
+            return "It is not possible to delete the user without username";
         }
-        CustomUser registeredUser = userRepository.getUserById(id);
+        CustomUser registeredUser = userRepository.getUserByUsername(username);
         if (registeredUser == null) {
-            return "The user with this id does not exist, so it cannot be deleted";
+            return "The user with this username does not exist, so it cannot be deleted";
         }
-        return userRepository.deleteUserById(id);
+        return userRepository.deleteUser(registeredUser.getId());
     }
 
     @Override

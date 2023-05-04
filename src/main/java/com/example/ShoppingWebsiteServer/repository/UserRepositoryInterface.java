@@ -7,7 +7,7 @@ import java.util.List;
 public interface UserRepositoryInterface {
     CustomUser register(CustomUser user);
 
-    String deleteUserById(Integer id);
+    String deleteUser(Integer id);
 
     CustomUser getUserById(Integer id);
 

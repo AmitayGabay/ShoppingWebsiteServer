@@ -35,6 +35,7 @@ public class SecurityConfigure extends WebSecurityConfigurerAdapter implements W
                 .headers().frameOptions().disable()
                 .authorizeRequests().antMatchers("/authenticate").permitAll()
                 .antMatchers("/user/register").permitAll()
+                .antMatchers("/user/search/**").permitAll()
                 .antMatchers("/user/all-users").permitAll()
                 .antMatchers("/item/search/**").permitAll()
                 .antMatchers("/item/all-items").permitAll()
