@@ -1,5 +1,6 @@
 package com.example.ShoppingWebsiteServer.controller;
 
+import com.example.ShoppingWebsiteServer.model.IdRequest;
 import com.example.ShoppingWebsiteServer.model.Item;
 import com.example.ShoppingWebsiteServer.service.ItemService;
 import com.example.ShoppingWebsiteServer.utils.JwtUtil;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/item")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ItemController {
 
     @Autowired
@@ -19,17 +21,18 @@ public class ItemController {
     private ItemService itemService;
 
     @PostMapping(value = "/add-to-favorites", params = "Authorization")
-    public Item addToFavorites(@RequestParam(value = "Authorization") String token, @RequestBody Integer itemId) {
+    public Item addToFavorites(@RequestParam(value = "Authorization") String token, @RequestBody IdRequest idRequest) {
         String jwtToken = token.substring(7);
         String username = jwtUtil.extractUsername(jwtToken);
-        return itemService.addToFavorites(username, itemId);
+        System.out.println(idRequest);
+        return itemService.addToFavorites(username, idRequest.getId());
     }
 
     @DeleteMapping(value = "/remove-from-favorites", params = "Authorization")
-    public String removeFromFavorites(@RequestParam(value = "Authorization") String token, @RequestBody Integer itemId) {
+    public String removeFromFavorites(@RequestParam(value = "Authorization") String token, @RequestBody IdRequest idRequest) {
         String jwtToken = token.substring(7);
         String username = jwtUtil.extractUsername(jwtToken);
-        return itemService.removeFromFavorites(username, itemId);
+        return itemService.removeFromFavorites(username, idRequest.getId());
     }
 
     @GetMapping(value = "/get-favorites", params = "Authorization")

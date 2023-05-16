@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/order")
+@CrossOrigin(origins = "http://localhost:3000")
 public class OrderController {
 
     @Autowired
@@ -19,10 +20,10 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping(value = "add-item-to-order", params = "Authorization")
-    public Item addItemToOrder( @RequestParam(value = "Authorization") String token, @RequestBody Integer itemId) {
+    public Item addItemToOrder( @RequestParam(value = "Authorization") String token, @RequestBody IdRequest idRequest) {
         String jwtToken = token.substring(7);
         String username = jwtUtil.extractUsername(jwtToken);
-        return orderService.addItemToOrder(username, itemId);
+        return orderService.addItemToOrder(username, idRequest.getId());
     }
 
     @DeleteMapping(value = "remove-item-from-order", params = "Authorization")

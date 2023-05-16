@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class AuthenticationController {
 
     @Autowired
@@ -15,7 +16,6 @@ public class AuthenticationController {
 
 
     @PostMapping("/authenticate")
-    @CrossOrigin
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
         try{
             return ResponseEntity.ok(authenticationService.createAuthenticationToken(authenticationRequest));
