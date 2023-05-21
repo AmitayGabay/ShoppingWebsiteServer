@@ -33,7 +33,7 @@ public class OrderController {
         return orderService.removeItemFromOrder(username, orderRequest);
     }
 
-    @PutMapping(value = "apdate-address-in-order", params = "Authorization")
+    @PutMapping(value = "update-address-in-order", params = "Authorization")
     public Order updateAddressInOrder(@RequestParam(value = "Authorization") String token, @RequestBody UpdateAddressRequest updateAddressRequest) {
         String jwtToken = token.substring(7);
         String username = jwtUtil.extractUsername(jwtToken);
