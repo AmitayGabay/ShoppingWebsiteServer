@@ -15,7 +15,7 @@ id int NOT NULL AUTO_INCREMENT,
 title varchar NOT NULL,
 picture varchar NOT NULL,
 usd_price double NOT NULL,
-amount int NOT NULL,
+amount int NOT NULL CHECK (amount >= 0),
 PRIMARY KEY (id)
 );
 
@@ -34,7 +34,7 @@ VALUES('a', 'aa', 'a@gmail.com', '0524436671', 'aen eliezer 45, netanya', 'Amita
 INSERT INTO items (title, picture, usd_price, amount)
 VALUES('helmet', 'https://m.media-amazon.com/images/W/IMAGERENDERING_521856-T1/images/I/613loUzm9WL._SL1500_.jpg', 15, 50),
 ('clock', 'https://www.ikea.com/us/en/images/products/pluttis-wall-clock-black__1038559_pe839733_s5.jpg', 34, 1000),
-('TV', 'https://media.istockphoto.com/id/638043774/photo/modern-curved-4k-ultrahd-tv.jpg?s=612x612&w=0&k=20&c=ZJBK7-64tG3uPBtXuUnWt-lAPSqz_nBlYXNYsVtmRtc=', 595, 30),
+('tv', 'https://media.istockphoto.com/id/638043774/photo/modern-curved-4k-ultrahd-tv.jpg?s=612x612&w=0&k=20&c=ZJBK7-64tG3uPBtXuUnWt-lAPSqz_nBlYXNYsVtmRtc=', 595, 30),
 ('flowerpot', 'https://upload.wikimedia.org/wikipedia/commons/9/9a/%22Meillandine%22_Rose_in_clay_pot.jpg', 20, 100),
 ('oven', 'https://universal.bertazzoni.com/media/immagini/13061_z_F6011PRO-TX.jpg', 750, 200),
 ('scooter', 'https://www.mi-il.co.il/images/site/products/9bfeeaf9-2992-4d65-930c-11da2e87fb0f.jpg', 920, 60),

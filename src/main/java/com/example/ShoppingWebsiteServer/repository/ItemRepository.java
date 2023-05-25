@@ -59,7 +59,7 @@ public class ItemRepository implements ItemRepositoryInterface {
     public List<Item> getFavoritesByName(List<Item> favorites, String name) {
         List<Item> results = new ArrayList<Item>();
         favorites.forEach(favorite -> {
-            if (favorite.getTitle().contains(name))
+            if (favorite.getTitle().contains(name.trim().toLowerCase()))
                 results.add(favorite);
         });
         return results;
@@ -99,7 +99,7 @@ public class ItemRepository implements ItemRepositoryInterface {
     public List<Item> getItemsByName(String name) {
         try {
             String sql = String.format("SELECT * FROM %s WHERE title LIKE ?", ITEMS_TABLE);
-            String helper = "%" + name + "%";
+            String helper = "%" + name.trim().toLowerCase() + "%";
             List<Item> items = jdbcTemplate.query(sql, new ItemMapper(), helper);
             return items;
         } catch (Exception e) {

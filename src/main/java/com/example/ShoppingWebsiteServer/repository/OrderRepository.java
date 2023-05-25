@@ -111,7 +111,7 @@ public class OrderRepository implements OrderRepositoryInterface {
         try {
             String sql = String.format("SELECT * FROM %s WHERE id = ?", ORDERS_TABLE);
             Order order = jdbcTemplate.queryForObject(sql, new OrderMapper(), orderId);
-            if(order != null && !Objects.equals(order.getUserId(), userId)){
+            if (order != null && !Objects.equals(order.getUserId(), userId)) {
                 System.out.println("This order does not belong to the user, so he cannot accept it");
                 return null;
             }
@@ -152,13 +152,11 @@ public class OrderRepository implements OrderRepositoryInterface {
     @Override
     public Order closeOrder(Integer id, Integer userId) {
         try {
-            String sql = String.format("UPDATE %s SET status = ?, order_date = current_date WHERE id = ?", ORDERS_TABLE);
-            jdbcTemplate.update(sql, OrderStatus.CLOSE.name(), id);
-            String additionalSql = String.format("SELECT items.id, items.title, items.picture, items.usd_price, items.amount FROM %s \n" +
+            String Sql = String.format("SELECT items.id, items.title, items.picture, items.usd_price, items.amount FROM %s \n" +
                     "INNER JOIN %s \n" +
                     "ON items.id = item_to_order.item_id \n" +
                     "WHERE item_to_order.order_id = ?", ITEMS_TABLE, ITEM_TO_ORDER_TABLE);
-            List<Item> orderItems = jdbcTemplate.query(additionalSql, new ItemMapper(), id);
+            List<Item> orderItems = jdbcTemplate.query(Sql, new ItemMapper(), id);
             HashMap<Integer, Integer> hashMap = new HashMap<Integer, Integer>();
             List<Item> unrepeatedItems = new ArrayList<Item>();
             orderItems.forEach(item -> {
@@ -170,8 +168,14 @@ public class OrderRepository implements OrderRepositoryInterface {
                 }
             });
             unrepeatedItems.forEach(item -> {
-                String amountSql = String.format("UPDATE %s SET amount = ? WHERE id = ?", ITEMS_TABLE);
-                jdbcTemplate.update(amountSql, item.getAmount() - hashMap.get(item.getId()), item.getId());
+                if (item.getAmount() >= hashMap.get(item.getId())) {
+                    String additionalSql = String.format("UPDATE %s SET status = ?, order_date = current_date WHERE id = ?", ORDERS_TABLE);
+                    jdbcTemplate.update(additionalSql, OrderStatus.CLOSE.name(), id);
+                    String amountSql = String.format("UPDATE %s SET amount = ? WHERE id = ?", ITEMS_TABLE);
+                    jdbcTemplate.update(amountSql, item.getAmount() - hashMap.get(item.getId()), item.getId());
+                } else {
+                    throw new CustomException("Error: The order cannot be placed, The amount of items in the order is greater than the amount of items in the store.");
+                }
             });
             Order updatedOrder = getOrderById(id, userId);
             return updatedOrder;
