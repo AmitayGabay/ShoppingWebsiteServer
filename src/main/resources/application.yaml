@@ -11,9 +11,9 @@ spring:
 
 #  new DB
   datasource:
-    url: ${JDBC_DATABASE_URL}
-    username: ${JDBC_DATABASE_USERNAME}
-    password: ${JDBC_DATABASE_PASSWORD}
+    url: jdbc:mysql://m1.db.pie.host:3306/shoppingwebsite?serverTimezone=UTC
+    username: shoppingwebsite_user
+    password: eF4eKRJvCyqQ2QkX
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
