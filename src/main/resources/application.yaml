@@ -2,10 +2,18 @@ server:
   port: 9000
 
 spring:
+#  old DB
+#  datasource:
+#    url: jdbc:mysql://sql7.freemysqlhosting.net:3306/sql7720011?serverTimezone=UTC
+#    username: sql7720011
+#    password: pPPT6eYTl8
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+
+#  new DB
   datasource:
-    url: jdbc:mysql://sql7.freemysqlhosting.net:3306/sql7720011?serverTimezone=UTC
-    username: sql7720011
-    password: pPPT6eYTl8
+    url: ${JDBC_DATABASE_URL}
+    username: ${JDBC_DATABASE_USERNAME}
+    password: ${JDBC_DATABASE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
